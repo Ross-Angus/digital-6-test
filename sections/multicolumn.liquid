@@ -1,5 +1,8 @@
 {{ 'section-multicolumn.css' | asset_url | stylesheet_tag }}
 {{ 'component-slider.css' | asset_url | stylesheet_tag }}
+{%- if section.settings.jumbo_type %}
+  {{ 'multicolumn-jumbo.css' | asset_url | stylesheet_tag }}
+{% endif -%}
 
 {%- style -%}
   .section-{{ section.id }}-padding {
@@ -12,53 +15,6 @@
       padding-top: {{ section.settings.padding_top }}px;
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
-  }
-
-  {% comment %} This "jumbo style" can be toggled on and off using a checkbox within
-  the theme customisation {% endcomment %}
-  .jumbo-style .grid__item {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .jumbo-style .grid__item:first-child {
-    padding-bottom: 5vw;
-  }
-
-  .jumbo-style .grid__item:last-child {
-    padding-top: 5vw;
-  }
-
-  .jumbo-style h3 {
-    font-size: 4.6vw;
-    line-height: 1;
-    letter-spacing: -.3rem;
-    margin-bottom: 0.3em;
-
-    @media screen and (max-width: 972px) {
-      font-size: 4rem;
-    }
-  }
-
-  .jumbo-style i,
-  .jumbo-style em {
-    font-weight: 600;
-  }
-
-  .jumbo-style p {
-    font-size: 1.4vw;
-    line-height: 1.4;
-
-    @media screen and (max-width: 972px) {
-      font-size: 2rem;
-    }
-  }
-
-  {% comment %} Removing side gutters {% endcomment %}
-  .jumbo-style .multicolumn-card__image-wrapper {
-    margin-left: 0;
-    margin-right: 0;
   }
 {%- endstyle -%}
 

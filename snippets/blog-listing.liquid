@@ -18,16 +18,11 @@
   {% assign featuredArticleCount = 0 %}
 
   {%- render 'blog-filter',
-    articles: blog.articles,
-    yearFilter: yearFilter,
-    associatedProduct: associatedProduct
+    articles: blog.articles
   -%}
 
   <div class="blog-articles{% if section.settings.layout == 'collage' %} blog-articles--collage{% endif %}" data-js="article-container">
     {%- for article in blog.articles -%}
-      {% comment %} This makes the string comparison work {% endcomment %}
-      {% assign pubArray = article.published_at | split: ' ' %}
-      {% assign thisBlogProdID = article.metafields.custom.associated_product | remove: 'gid://shopify/Product/' %}
       {% assign isFeatured = article.metafields.custom.is_featured_article %}
 
       {% comment %} Catching the first two featured articles {% endcomment %}
@@ -38,68 +33,23 @@
       {% comment %} Non-featured articles {% endcomment %}
       {%- else -%}
         {% comment %} Default blog CTA rendering {% endcomment %}
-        {%- if yearFilter == blank and associatedProduct == blank -%}
-          <div
-            class="blog-articles__article article{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-            {% if settings.animations_reveal_on_scroll %}
-              data-cascade
-              style="--animation-order: {{ forloop.index }};"
-            {% endif %}
-          >
-            {%- render 'article-card',
-              article: article,
-              media_height: section.settings.image_height,
-              media_aspect_ratio: article.image.aspect_ratio,
-              show_image: section.settings.show_image,
-              show_date: section.settings.show_date,
-              show_author: section.settings.show_author,
-              show_excerpt: false
-            -%}
-          </div>
-
-          {% comment %} Rendering blog CTAs which match a particular product {% endcomment %}
-          {% elsif thisBlogProdID contains associatedProduct %}
-          <div
-            class="blog-articles__article article{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-            {% if settings.animations_reveal_on_scroll %}
-              data-cascade
-              style="--animation-order: {{ forloop.index }};"
-            {% endif %}
-          >
-            {%- render 'article-card',
-              article: article,
-              media_height: section.settings.image_height,
-              media_aspect_ratio: article.image.aspect_ratio,
-              show_image: section.settings.show_image,
-              show_date: section.settings.show_date,
-              show_author: section.settings.show_author,
-              show_excerpt: false
-            -%}
-          </div>
-
-
-        {% comment %} Rendering blog CTAs which match a particular year {% endcomment %}
-        {% elsif pubArray[0] contains yearFilter and associatedProduct == blank %}
-          <div
-            class="blog-articles__article article{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-            {% if settings.animations_reveal_on_scroll %}
-              data-cascade
-              style="--animation-order: {{ forloop.index }};"
-            {% endif %}
-          >
-            {%- render 'article-card',
-              article: article,
-              media_height: section.settings.image_height,
-              media_aspect_ratio: article.image.aspect_ratio,
-              show_image: section.settings.show_image,
-              show_date: section.settings.show_date,
-              show_author: section.settings.show_author,
-              show_excerpt: false
-            -%}
-          </div>
-
-        {%- endif -%}
-
+        <div
+          class="blog-articles__article article{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+          {% if settings.animations_reveal_on_scroll %}
+            data-cascade
+            style="--animation-order: {{ forloop.index }};"
+          {% endif %}
+        >
+          {%- render 'article-card',
+            article: article,
+            media_height: section.settings.image_height,
+            media_aspect_ratio: article.image.aspect_ratio,
+            show_image: section.settings.show_image,
+            show_date: section.settings.show_date,
+            show_author: section.settings.show_author,
+            show_excerpt: false
+          -%}
+        </div>
       {%- endif -%}
     {%- endfor -%}
   </div>

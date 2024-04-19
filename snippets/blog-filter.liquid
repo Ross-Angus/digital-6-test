@@ -1,11 +1,7 @@
 <!-- start blog-filter -->
 {{ 'blog-filter.css' | asset_url | stylesheet_tag }}
 
-{% comment %} Fix to stop the local version of the site redirecting to the live version
-of the site {% endcomment %}
-{% assign formURLArray = canonical_url | split: 'myshopify.com' %}
-
-<form method="get" action="{{ formURLArray[1] }}" class="grid grid--2-col-desktop-down">
+<form class="grid grid--2-col-desktop-down">
   {% comment %}
   <p><textarea cols="150" rows="50">{{ articles | json }}</textarea></p>
   {% endcomment %}
@@ -49,12 +45,10 @@ of the site {% endcomment %}
     {% if validYears != blank %}
       {% assign yearsArray = validYears | split: delimiter %}
       <label for="year-posted" class="visually-hidden">Date posted</label>
-      <select name="year-posted" id="year-posted" class="select-bodytext" data-js="auto-submit">
-        <option value="">Year posted</option>
+      <select name="year-posted" id="year-posted" class="select-bodytext" data-js="year-sort">
+        <option value="" selected="selected">Year posted</option>
         {%- for year in yearsArray -%}
-          <option
-            {%- if year contains yearFilter %} selected="selected"{%- endif -%}
-          >{{ year }}</option>
+          <option>{{ year }}</option>
         {%- endfor -%}
       </select>
     {% endif %}
@@ -81,8 +75,8 @@ of the site {% endcomment %}
     {% if associatedProducts != blank %}
       {% assign associatedProductsArray = associatedProducts | split: delimiter %}
       <label for="associated-products" class="visually-hidden">Associated products</label>
-      <select name="associated-products" id="associated-products" class="select-bodytext" data-js="auto-submit">
-        <option value="">Associated products</option>
+      <select name="associated-products" id="associated-products" class="select-bodytext" data-js="prod-sort">
+        <option value="" selected="selected">Associated products</option>
         {%- for productID in associatedProductsArray -%}
           {% comment %} This looks, on the face of it, an absolutely insane
           method to get product data back, if you have a product ID.
@@ -93,9 +87,7 @@ of the site {% endcomment %}
             {% assign loopcheckID = productID | plus: 0 %}
 
             {% if loopID == loopcheckID %}
-              <option value="{{ productID }}"
-                {%- if associatedProduct contains productID %} selected="selected"{%- endif -%}
-              >{{ product.title }}</option>
+              <option value="{{ productID }}">{{ product.title }}</option>
             {% endif %}
           {% endfor %}
         {%- endfor -%}
@@ -127,6 +119,30 @@ appear is to use a traditional `script` tag. {% endcomment %}
 <script>
   (() => {
 
+    // This function takes two parameters:
+    // The attribute name
+    // The attribute value
+    // It then hides all blog posts apart from the ones which match
+    const filterBlog = (attr, value) => {
+      const blogContainer = document.querySelector('[data-js="article-container"]');
+      const ctas = Array.from(blogContainer.children);
+      let visibleArticleCount = 0;
+      ctas.forEach((cta) => {
+        const wrap = cta.querySelector('.article-card-wrapper');
+        if (wrap.getAttribute(attr) === value) {
+          cta.classList.remove('visually-hidden');
+          visibleArticleCount = visibleArticleCount + 1;
+        } else {
+          cta.classList.add('visually-hidden');
+        }
+        // Update the count
+        const articleInfo = document.querySelectorAll('[data-js="article-count"]');
+        articleInfo.forEach((tag) => {
+          tag.innerHTML = `${visibleArticleCount} article${visibleArticleCount === 1 ? '' : 's'}`;
+        });
+      });
+    };
+
     {% comment %} This function redirects the current page to a URL which is part of the `name`
     attribute of the current input. Tested on `select`.{% endcomment %}
     const selectRedirect = document.querySelectorAll('[data-js="select-redirect"]');
@@ -136,16 +152,33 @@ appear is to use a traditional `script` tag. {% endcomment %}
       });
     });
 
-    {% comment %} This auto-submits the parent form, when the currently selected element is
-    changed. Tested on `select`.{% endcomment %}
-    const autoSubmit = document.querySelectorAll('[data-js="auto-submit"]');
-    autoSubmit.forEach((select) => {
-      select.addEventListener("change", (event) => {
-        const input = event.target;
-        const thisForm = input.closest("form");
-        thisForm.submit();
+    {% comment %} The user has selected a year and wants to display all blog posts which match it
+    {% endcomment %}
+    const selectYear = document.querySelector('[data-js="year-sort"]');
+    if (selectYear) {
+      selectYear.addEventListener("change", (event) => {
+        const yearChoice = event.target.value;
+        if (yearChoice !== '') {
+          filterBlog('data-pubyear', yearChoice);
+          // Reset the other select box
+          selectProd.selectedIndex = 0;
+        }
       });
-    });
+    }
+
+    {% comment %} The user has selected a product and wants to display all blog posts which match it
+    {% endcomment %}
+    const selectProd = document.querySelector('[data-js="prod-sort"]');
+    if (selectProd) {
+      selectProd.addEventListener("change", (event) => {
+        const prodChoice = event.target.value;
+        if (prodChoice !== '') {
+          filterBlog('data-prod-id', prodChoice);
+          // Reset the other select box
+          selectYear.selectedIndex = 0;
+        }
+      });
+    }
 
   })();
 </script>

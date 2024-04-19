@@ -23,7 +23,10 @@
       assign ratio = media_aspect_ratio
     endif
   -%}
-  <div class="article-card-wrapper card-wrapper underline-links-hover">
+  {% assign associatedProductID = article.metafields.custom.associated_product | remove: 'gid://shopify/Product/' %}
+  <div class="article-card-wrapper card-wrapper underline-links-hover" data-pubyear="{{ article.published_at | date: '%Y' }}"
+    {%- if associatedProductID != blank %} data-prod-id="{{ associatedProductID }}"{% endif -%}
+  >
     {% comment %} <article aria-labelledby="Article-{{ article.id }}"> {% endcomment %}
     <div
       class="

@@ -127,6 +127,8 @@ appear is to use a traditional `script` tag. {% endcomment %}
       const blogContainer = document.querySelector('[data-js="article-container"]');
       const ctas = Array.from(blogContainer.children);
       let visibleArticleCount = 0;
+      const loadMoreBtn = document.querySelector('[data-js="load-more"]');
+
       ctas.forEach((cta) => {
         const wrap = cta.querySelector('.article-card-wrapper');
         if (wrap.getAttribute(attr) === value) {
@@ -140,6 +142,8 @@ appear is to use a traditional `script` tag. {% endcomment %}
         articleInfo.forEach((tag) => {
           tag.innerHTML = `${visibleArticleCount} article${visibleArticleCount === 1 ? '' : 's'}`;
         });
+        // Hide the "Load more" button
+        loadMoreBtn.classList.add('visually-hidden');
       });
     };
 

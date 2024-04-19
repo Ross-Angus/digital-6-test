@@ -38,7 +38,7 @@
       {% comment %} Non-featured articles {% endcomment %}
       {%- else -%}
         {% comment %} Default blog CTA rendering {% endcomment %}
-        {%- if dateFilter == blank and associatedProduct == blank -%}
+        {%- if yearFilter == blank and associatedProduct == blank -%}
           <div
             class="blog-articles__article article{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
             {% if settings.animations_reveal_on_scroll %}
@@ -78,8 +78,8 @@
           </div>
 
 
-          {% comment %} Rendering blog CTAs which match a particular date {% endcomment %}
-        {% elsif pubArray[0] contains dateFilter and associatedProduct == blank %}
+        {% comment %} Rendering blog CTAs which match a particular year {% endcomment %}
+        {% elsif pubArray[0] contains yearFilter and associatedProduct == blank %}
           <div
             class="blog-articles__article article{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
             {% if settings.animations_reveal_on_scroll %}

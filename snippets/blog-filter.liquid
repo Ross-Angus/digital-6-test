@@ -61,12 +61,18 @@ of the site {% endcomment %}
 
     {% comment %} Only render the tag filter if there are any tags {% endcomment %}
     {% if allTags != blank %}
+      {% comment %} Pulling the current filtered tag from the URL {% endcomment %}
+      {% assign tagURL = canonical_url | split: '/tagged/' %}
+
       {% assign tagArray = allTags | split: delimiter | sort %}
       <label for="tags" class="visually-hidden">Tags</label>
       <select name="tags" id="tags" class="select-bodytext" data-js="select-redirect">
         <option value="">Tags</option>
         {%- for tag in tagArray -%}
-          <option value="/blogs/{{ blog.handle }}/tagged/{{ tag | handleize }}">{{ tag }}</option>
+          {% assign tagHandle = tag | handleize %}
+          <option value="/blogs/{{ blog.handle }}/tagged/{{ tag | handleize }}"
+            {%- if tagURL[1] contains tagHandle %} selected="selected"{%- endif -%}
+          >{{ tag }}</option>
         {%- endfor -%}
       </select>
     {% endif %}

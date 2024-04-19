@@ -55,10 +55,6 @@ of the site {% endcomment %}
           <option
             {%- if year contains yearFilter %} selected="selected"{%- endif -%}
           >{{ year }}</option>
-          {% comment %} {% assign postDateArray = date | split: '-' %}
-          <option value="{{ year }}"
-            {%- if dateFilter contains postDateArray[0] %} selected="selected"{%- endif -%}
-          >{{ postDateArray[0] }}</option> {% endcomment %}
         {%- endfor -%}
       </select>
     {% endif %}

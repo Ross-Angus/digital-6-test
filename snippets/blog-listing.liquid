@@ -1,0 +1,190 @@
+<!-- start blog-listing -->
+<div class="main-blog page-width section-{{ section.id }}-padding">
+
+  {%- render 'featured-articles',
+    articles: blog.articles
+  -%}
+
+  {% comment %} The design doesn't specify a heading but it is required in order to
+  diferentiate between News and Testimonials {% endcomment %}
+  <h1 class="title--primary{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
+    {{- blog.title | escape -}}
+  </h1>
+
+  {% comment %} This variable is initialised here in order to keep a count of
+  how many featured articles there are - only the first two will be rendered
+  by the `featured-articles` snippet, so any after that point should be rendered
+  as normal. {% endcomment %}
+  {% assign featuredArticleCount = 0 %}
+
+  {%- render 'blog-filter',
+    articles: blog.articles,
+    yearFilter: yearFilter,
+    associatedProduct: associatedProduct
+  -%}
+
+  <div class="blog-articles{% if section.settings.layout == 'collage' %} blog-articles--collage{% endif %}" data-js="article-container">
+    {%- for article in blog.articles -%}
+      {% comment %} This makes the string comparison work {% endcomment %}
+      {% assign pubArray = article.published_at | split: ' ' %}
+      {% assign thisBlogProdID = article.metafields.custom.associated_product | remove: 'gid://shopify/Product/' %}
+      {% assign isFeatured = article.metafields.custom.is_featured_article %}
+
+      {% comment %} Catching the first two featured articles {% endcomment %}
+      {%- if isFeatured and featuredArticleCount <= 2 -%}
+        {% assign featuredArticleCount = featuredArticleCount | plus: 1 %}
+        {% comment %} Don't render this article {% endcomment %}
+
+      {% comment %} Non-featured articles {% endcomment %}
+      {%- else -%}
+        {% comment %} Default blog CTA rendering {% endcomment %}
+        {%- if dateFilter == blank and associatedProduct == blank -%}
+          <div
+            class="blog-articles__article article{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+            {% if settings.animations_reveal_on_scroll %}
+              data-cascade
+              style="--animation-order: {{ forloop.index }};"
+            {% endif %}
+          >
+            {%- render 'article-card',
+              article: article,
+              media_height: section.settings.image_height,
+              media_aspect_ratio: article.image.aspect_ratio,
+              show_image: section.settings.show_image,
+              show_date: section.settings.show_date,
+              show_author: section.settings.show_author,
+              show_excerpt: false
+            -%}
+          </div>
+
+          {% comment %} Rendering blog CTAs which match a particular product {% endcomment %}
+          {% elsif thisBlogProdID contains associatedProduct %}
+          <div
+            class="blog-articles__article article{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+            {% if settings.animations_reveal_on_scroll %}
+              data-cascade
+              style="--animation-order: {{ forloop.index }};"
+            {% endif %}
+          >
+            {%- render 'article-card',
+              article: article,
+              media_height: section.settings.image_height,
+              media_aspect_ratio: article.image.aspect_ratio,
+              show_image: section.settings.show_image,
+              show_date: section.settings.show_date,
+              show_author: section.settings.show_author,
+              show_excerpt: false
+            -%}
+          </div>
+
+
+          {% comment %} Rendering blog CTAs which match a particular date {% endcomment %}
+        {% elsif pubArray[0] contains dateFilter and associatedProduct == blank %}
+          <div
+            class="blog-articles__article article{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+            {% if settings.animations_reveal_on_scroll %}
+              data-cascade
+              style="--animation-order: {{ forloop.index }};"
+            {% endif %}
+          >
+            {%- render 'article-card',
+              article: article,
+              media_height: section.settings.image_height,
+              media_aspect_ratio: article.image.aspect_ratio,
+              show_image: section.settings.show_image,
+              show_date: section.settings.show_date,
+              show_author: section.settings.show_author,
+              show_excerpt: false
+            -%}
+          </div>
+
+        {%- endif -%}
+
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  <footer class="grid grid--2-col-desktop-down">
+    <p class="grid__item">
+      <button data-js="load-more" class="button button--secondary">Load more</button>
+    </p>
+
+    {% comment %} I chose not to implement this functionality because
+    Shopify does not provide any native way to do this. The work-around
+    is to pull in all articles as JSON data and then manipulate and
+    render them using JavaScript. This approach breaks many of the
+    benefits of Webstore 2.0 and is a significat feature to build. {% endcomment %}
+    <p class="grid__item right">
+      <label for="sort-type">Sort by</label>
+      <select id="sort-type" name="sort-type" class="select-bodytext">
+        <option value="new-old">Most recent</option>
+        <option value="new-old">Chronological order</option>
+      </select>
+      <span data-js="article-count"></span>
+    </p>
+  </footer>
+</div>
+
+{% comment %} Documented method of adding script tags in Liquid doesn't work on snippets {% endcomment %}
+<script>
+  (() => {
+    const blogContainer = document.querySelector('[data-js="article-container"]');
+    const ctas = Array.from(blogContainer.children);
+    const loadMoreBtn = document.querySelector('[data-js="load-more"]');
+
+    // Counts how many articles are currently visable to the user
+    const countArticles = () => {
+      let articleCount = 0;
+      ctas.forEach((cta) => {
+        if (!cta.classList.contains('visually-hidden')) {
+          articleCount = articleCount +1;
+        }
+      });
+      return articleCount;
+    };
+
+    // This shows calls-to-action panels in groups defined by the `resultsPerPage` variable
+    const showNext = () => {
+      const resultsPerPage = 6;
+      let showCount = 0;
+
+      ctas.forEach((cta) => {
+        // Is the current call-to-action hidden?
+        // Have we shown enough calls-to-action already?
+        if (cta.classList.contains('visually-hidden') && showCount < resultsPerPage) {
+          cta.classList.remove('visually-hidden');
+          loadMoreBtn.classList.add('visually-hidden');
+          showCount = showCount +1;
+        }
+        // There are still hidden call-to-action buttons, which means we still need
+        // the "Load More" button
+        else if (cta.classList.contains('visually-hidden')) {
+          loadMoreBtn.classList.remove('visually-hidden');
+        }
+      });
+
+      // Update the page with how many articles are currently shown
+      const articleCount = countArticles();
+      const articleInfo = document.querySelectorAll('[data-js="article-count"]');
+      articleInfo.forEach((tag) => {
+        tag.innerHTML = `${articleCount} article${articleCount === 1 ? '' : 's'}`;
+      });
+    };
+
+    // Adding existing functionality to the "Load More" button
+    loadMoreBtn.addEventListener("click", () => {
+      showNext();
+    });
+
+    // On load, this hides all the call-to-action panels, then shows the first "page" of results
+    if (ctas.length > 0) {
+      ctas.forEach((cta) => {
+        cta.classList.add('visually-hidden');
+      });
+      // Hide the "Load more" button until it is useful
+      loadMoreBtn.classList.add('visually-hidden');
+      showNext();
+    }
+  })();
+</script>
+<!-- end blog-listing -->

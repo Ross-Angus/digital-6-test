@@ -1,0 +1,151 @@
+<!-- start blog-filter -->
+{{ 'blog-filter.css' | asset_url | stylesheet_tag }}
+
+{% comment %} Fix to stop the local version of the site redirecting to the live version
+of the site {% endcomment %}
+{% assign formURLArray = canonical_url | split: 'myshopify.com' %}
+
+<form method="get" action="{{ formURLArray[1] }}" class="grid grid--2-col-desktop-down">
+  {% comment %}
+  <p><textarea cols="150" rows="50">{{ articles | json }}</textarea></p>
+  {% endcomment %}
+  <p class="grid__item">
+    Filter:
+    {% comment %} Building up an Array of article dates {% endcomment %}
+    {% assign validYears = '' %}
+    {% assign allTags = '' %}
+    {% assign associatedProducts = '' %}
+    {% assign delimiter = ';' %}
+
+    {%- for article in articles -%}
+      {% assign thisPostDateArray = article.published_at | split: '-' %}
+      {% assign thisPostYear = thisPostDateArray[0] %}
+      {% assign associatedProductID = article.metafields.custom.associated_product | remove: 'gid://shopify/Product/' %}
+
+      {% comment %} Only adding a new date if it doesn't already appear in the variable {% endcomment %}
+      {% unless validYears contains thisPostYear %}
+        {% assign validYears = validYears | append: thisPostYear | append: delimiter %}
+      {% endunless %}
+
+      {% comment %} Tags are naturally an Array. We need to loop through each tag on each article and
+      see if it appears in the master list of tags common to all articles {% endcomment %}
+      {% for tag in article.tags %}
+        {% unless allTags contains tag %}
+          {% assign allTags = allTags | append: tag | append: delimiter %}
+        {% endunless %}
+      {% endfor %}
+
+      {% comment %} A single product may or may not be associated with blog posts, via metadata {% endcomment %}
+      {% if associatedProductID != blank %}
+        {% comment %} Add this ID to the master list, unless it's already there {% endcomment %}
+        {% unless associatedProducts contains associatedProductID %}
+          {% assign associatedProducts = associatedProducts | append: associatedProductID | append: delimiter %}
+        {% endunless %}
+      {% endif %}
+
+    {%- endfor -%}
+
+    {% comment %} Only render the date filter if there is a year to display {% endcomment %}
+    {% if validYears != blank %}
+      {% assign yearsArray = validYears | split: delimiter %}
+      <label for="year-posted" class="visually-hidden">Date posted</label>
+      <select name="year-posted" id="year-posted" class="select-bodytext" data-js="auto-submit">
+        <option value="">Year posted</option>
+        {%- for year in yearsArray -%}
+          <option
+            {%- if year contains yearFilter %} selected="selected"{%- endif -%}
+          >{{ year }}</option>
+          {% comment %} {% assign postDateArray = date | split: '-' %}
+          <option value="{{ year }}"
+            {%- if dateFilter contains postDateArray[0] %} selected="selected"{%- endif -%}
+          >{{ postDateArray[0] }}</option> {% endcomment %}
+        {%- endfor -%}
+      </select>
+    {% endif %}
+
+    {% comment %} Only render the tag filter if there are any tags {% endcomment %}
+    {% if allTags != blank %}
+      {% assign tagArray = allTags | split: delimiter | sort %}
+      <label for="tags" class="visually-hidden">Tags</label>
+      <select name="tags" id="tags" class="select-bodytext" data-js="select-redirect">
+        <option value="">Tags</option>
+        {%- for tag in tagArray -%}
+          <option value="/blogs/{{ blog.handle }}/tagged/{{ tag | handleize }}">{{ tag }}</option>
+        {%- endfor -%}
+      </select>
+    {% endif %}
+
+    {% comment %} Only render the product filter if there are any products to show {% endcomment %}
+    {% if associatedProducts != blank %}
+      {% assign associatedProductsArray = associatedProducts | split: delimiter %}
+      <label for="associated-products" class="visually-hidden">Associated products</label>
+      <select name="associated-products" id="associated-products" class="select-bodytext" data-js="auto-submit">
+        <option value="">Associated products</option>
+        {%- for productID in associatedProductsArray -%}
+          {% comment %} This looks, on the face of it, an absolutely insane
+          method to get product data back, if you have a product ID.
+          Unfortunately, Shopify disagrees with you. {% endcomment %}
+          {% for product in collections.all.products %}
+            {% comment %} Type conversion, because it wouldn't work otherwise {% endcomment %}
+            {% assign loopID = product.id | plus: 0 %}
+            {% assign loopcheckID = productID | plus: 0 %}
+
+            {% if loopID == loopcheckID %}
+              <option value="{{ productID }}"
+                {%- if associatedProduct contains productID %} selected="selected"{%- endif -%}
+              >{{ product.title }}</option>
+            {% endif %}
+          {% endfor %}
+        {%- endfor -%}
+      </select>
+    {% endif %}
+  </p>
+
+  {% comment %} I chose not to implement this functionality because
+  Shopify does not provide any native way to do this. The work-around
+  is to pull in all articles as JSON data and then manipulate and
+  render them using JavaScript. This approach breaks many of the
+  benefits of Webstore 2.0 and is a significat feature to build. {% endcomment %}
+  <p class="grid__item right">
+    <label for="sort-type">Sort by</label>
+    <select id="sort-type" name="sort-type" class="select-bodytext">
+      <option value="new-old">Most recent</option>
+      <option value="new-old">Chronological order</option>
+    </select>
+    <span data-js="article-count"></span>
+  </p>
+
+  {% comment %} Added for accessability {% endcomment %}
+  <p class="visually-hidden"><input type="submit" value="Filter by date"></p>
+</form>
+
+{% comment %} For reasons known only to the Liquid parsing engine, all of the documented
+methods of adding JavaScript to a snippet refused to work. The only way to get JS to
+appear is to use a traditional `script` tag. {% endcomment %}
+<script>
+  (() => {
+
+    {% comment %} This function redirects the current page to a URL which is part of the `name`
+    attribute of the current input. Tested on `select`.{% endcomment %}
+    const selectRedirect = document.querySelectorAll('[data-js="select-redirect"]');
+    selectRedirect.forEach((select) => {
+      select.addEventListener("change", (event) => {
+        window.location.replace(event.target.value);
+      });
+    });
+
+    {% comment %} This auto-submits the parent form, when the currently selected element is
+    changed. Tested on `select`.{% endcomment %}
+    const autoSubmit = document.querySelectorAll('[data-js="auto-submit"]');
+    autoSubmit.forEach((select) => {
+      select.addEventListener("change", (event) => {
+        const input = event.target;
+        const thisForm = input.closest("form");
+        thisForm.submit();
+      });
+    });
+
+  })();
+</script>
+
+<!-- end blog-filter -->

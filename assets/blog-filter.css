@@ -1,0 +1,11 @@
+/* Blog filter */
+
+/* An unstyled select box */
+.select-bodytext {
+  background: inherit;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1em;
+}

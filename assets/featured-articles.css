@@ -1,0 +1,28 @@
+/* The standard grid doesn't handle columns of a different size,
+so this is custom work to make them different */
+.featured-article-1 {
+  width: calc(60% - var(--grid-desktop-horizontal-spacing));
+  max-width: 100%;
+
+  @media screen and (max-width: 750px) {
+    width: auto;
+  }
+}
+.featured-article-1 .card-wrapper,
+.featured-article-2 .card-wrapper {
+  flex-grow: 9;
+}
+
+.featured-article-2 {
+  width: calc(40% - var(--grid-desktop-horizontal-spacing));
+  max-width: 100%;
+
+  @media screen and (max-width: 750px) {
+    width: auto;
+  }
+}
+
+.featured-article-1 .article-card__image--medium .ratio::before,
+.featured-article-2 .article-card__image--medium .ratio::before {
+  padding-bottom: 50rem;
+}

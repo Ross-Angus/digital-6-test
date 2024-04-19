@@ -1,0 +1,124 @@
+{
+  "sections": {
+    "multicolumn_B3LWNE": {
+      "type": "multicolumn",
+      "blocks": {
+        "column_BBVmrt": {
+          "type": "column",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/pexels-cottonbro-studio-4937226.jpg",
+            "title": "",
+            "text": "",
+            "link_label": "",
+            "link": ""
+          }
+        },
+        "column_V4QJah": {
+          "type": "column",
+          "settings": {
+            "title": "Effortlessly Sophisticated fashion, <em>tipped in our articles<\/em>.",
+            "text": "<p>Unlock Effortlessly Sophisticated Style: Expert Fashion Insights Await in Our Articles Below<\/p>",
+            "link_label": "",
+            "link": ""
+          }
+        },
+        "column_PAyygh": {
+          "type": "column",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/pexels-gabriela-pereira-2646119.jpg",
+            "title": "",
+            "text": "",
+            "link_label": "",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "column_BBVmrt",
+        "column_V4QJah",
+        "column_PAyygh"
+      ],
+      "settings": {
+        "title": "",
+        "heading_size": "h1",
+        "jumbo_type": true,
+        "image_width": "full",
+        "image_ratio": "adapt",
+        "columns_desktop": 3,
+        "column_alignment": "center",
+        "background_style": "none",
+        "button_label": "",
+        "button_link": "",
+        "color_scheme": "scheme-2",
+        "columns_mobile": "1",
+        "swipe_on_mobile": false,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "main": {
+      "type": "main-blog",
+      "settings": {
+        "layout": "grid",
+        "show_image": true,
+        "image_height": "medium",
+        "show_date": false,
+        "show_author": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "image_with_text_mBRmPt": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading_hDFzHp": {
+          "type": "heading",
+          "settings": {
+            "heading": "About Ensemble",
+            "heading_size": "h1"
+          }
+        },
+        "text_BBDGNB": {
+          "type": "text",
+          "settings": {
+            "text": "<p>At Ensemble, we embody effortless sophistication inspired by the urban lifestyle. From boardroom attire to chic streetwear, our collections blend luxury with practicality. Explore our fashion expertise in our articles for insider tips and inspiration to elevate your wardrobe. Join us on a journey where style meets the rhythm of the cityscape.<\/p>",
+            "text_style": "body"
+          }
+        },
+        "button_akLDC4": {
+          "type": "button",
+          "settings": {
+            "button_label": "Find out more",
+            "button_link": "",
+            "button_style_secondary": true
+          }
+        }
+      },
+      "block_order": [
+        "heading_hDFzHp",
+        "text_BBDGNB",
+        "button_akLDC4"
+      ],
+      "settings": {
+        "image": "shopify:\/\/shop_images\/pexels-furkanfdemir-6207074.jpg",
+        "height": "adapt",
+        "desktop_image_width": "medium",
+        "layout": "text_first",
+        "desktop_content_position": "top",
+        "desktop_content_alignment": "left",
+        "content_layout": "no-overlap",
+        "section_color_scheme": "scheme-2",
+        "color_scheme": "scheme-2",
+        "image_behavior": "none",
+        "mobile_content_alignment": "left",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": [
+    "multicolumn_B3LWNE",
+    "main",
+    "image_with_text_mBRmPt"
+  ]
+}

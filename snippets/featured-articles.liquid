@@ -1,0 +1,53 @@
+<!-- start featured-articles -->
+
+{% comment %} This is the total number of featured articles available
+- this is used to work out if this panel should render or not {% endcomment %}
+{% assign featuredArticleTotal = 0 %}
+
+{%- for article in articles -%}
+  {% assign isFeatured = article.metafields.custom.is_featured_article %}
+  {%- if isFeatured -%}
+    {% assign featuredArticleTotal = featuredArticleTotal | plus: 1 %}
+  {%- endif -%}
+{%- endfor -%}
+
+{% comment %} This is a running total of how many featured articles
+we've rendered to the page {% endcomment %}
+{% assign featuredArticleCount = 0 %}
+
+{%- if featuredArticleTotal > 1 -%}
+  {{ 'featured-articles.css' | asset_url | stylesheet_tag }}
+  <section aria-label="Featured articles">
+    <h2 class="h1">Featured articles</h2>
+
+    <div class="grid grid--2-col-desktop-down">
+      {%- for article in articles -%}
+        {% assign isFeatured = article.metafields.custom.is_featured_article %}
+        {%- if isFeatured and featuredArticleCount < 2 -%}
+          {% assign featuredArticleCount = featuredArticleCount | plus: 1 %}
+          <div class="grid__item featured-article-{{ featuredArticleCount }}">
+            <div
+              class="blog-articles__article article{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+              {% if settings.animations_reveal_on_scroll %}
+                data-cascade
+                style="--animation-order: {{ forloop.index }};"
+              {% endif %}
+            >
+              {%- render 'article-card',
+                article: article,
+                media_height: section.settings.image_height,
+                media_aspect_ratio: article.image.aspect_ratio,
+                show_image: section.settings.show_image,
+                show_date: section.settings.show_date,
+                show_author: section.settings.show_author,
+                show_excerpt: false
+              -%}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </section>
+{%- endif -%}
+
+<!-- end featured-articles -->

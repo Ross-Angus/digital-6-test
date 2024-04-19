@@ -16,21 +16,8 @@
   }
 {%- endstyle -%}
 
-{% comment %} Grabbing two specific querystrings from the URL {% endcomment %}
-{%- capture contentForQuerystring -%}{{ content_for_header }}{%- endcapture -%}
-
-{% assign beforeYearPosted = contentForQuerystring | split: 'year-posted=' %}
-{% assign afterYearPosted = beforeYearPosted[1] | split: '\' %}
-{% assign yearFilter = afterYearPosted[0] %}
-
-{% assign beforeProduct = contentForQuerystring | split: 'associated-products=' %}
-{% assign afterProduct = beforeProduct[1] | split: '\' %}
-{% assign associatedProduct = afterProduct[0] %}
-
 {%- render 'blog-listing',
-  blog: blog,
-  yearFilter: yearFilter,
-  associatedProduct: associatedProduct
+  blog: blog
 %}
 
 {% schema %}

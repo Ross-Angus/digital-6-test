@@ -137,18 +137,17 @@ appear is to use a traditional `script` tag. {% endcomment %}
     // This function takes two parameters:
     // The attribute name
     // The attribute value
-    // It then hides all blog posts apart from the ones which match
+    // It then hides all blog posts apart from the ones which match the name / value
+    // pair passed as a parameter.
     const filterBlog = (attr, value) => {
       const blogContainer = document.querySelector('[data-js="article-container"]');
       const ctas = Array.from(blogContainer.children);
-      let visibleArticleCount = 0;
       const loadMoreBtn = document.querySelector('[data-js="load-more"]');
 
       ctas.forEach((cta) => {
         const wrap = cta.querySelector('.article-card-wrapper');
         if (wrap.getAttribute(attr) === value) {
           cta.classList.remove('visually-hidden');
-          visibleArticleCount = visibleArticleCount + 1;
         } else {
           cta.classList.add('visually-hidden');
         }

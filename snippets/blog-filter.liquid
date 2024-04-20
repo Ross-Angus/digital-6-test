@@ -117,6 +117,23 @@ appear is to use a traditional `script` tag. {% endcomment %}
 <script>
   (() => {
 
+    // Updates the markup which lists how many articles are visible
+    const countUpdate = () => {
+      // Count the visible articles
+      const blogContainer = document.querySelector('[data-js="article-container"]');
+      const visibleCTACount = blogContainer.querySelectorAll('.blog-articles__article:not(.visually-hidden)').length;
+
+      // Update the markup
+      const articleInfo = document.querySelectorAll('[data-js="article-count"]');
+      articleInfo.forEach((tag) => {
+        tag.innerHTML = `${visibleCTACount} article${visibleCTACount === 1 ? '' : 's'}`;
+      });
+    };
+
+    document.addEventListener("blog-listing-updated", () => {
+      countUpdate();
+    });
+
     // This function takes two parameters:
     // The attribute name
     // The attribute value
@@ -135,11 +152,11 @@ appear is to use a traditional `script` tag. {% endcomment %}
         } else {
           cta.classList.add('visually-hidden');
         }
+
         // Update the count
-        const articleInfo = document.querySelectorAll('[data-js="article-count"]');
-        articleInfo.forEach((tag) => {
-          tag.innerHTML = `${visibleArticleCount} article${visibleArticleCount === 1 ? '' : 's'}`;
-        });
+        let updateEvent = new Event("blog-listing-updated");
+        document.dispatchEvent(updateEvent);
+
         // Hide the "Load more" button
         loadMoreBtn.classList.add('visually-hidden');
       });

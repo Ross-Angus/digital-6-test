@@ -113,12 +113,9 @@
         }
       });
 
-      // Update the page with how many articles are currently shown
-      const articleCount = countArticles();
-      const articleInfo = document.querySelectorAll('[data-js="article-count"]');
-      articleInfo.forEach((tag) => {
-        tag.innerHTML = `${articleCount} article${articleCount === 1 ? '' : 's'}`;
-      });
+      // Update the count
+      let updateEvent = new Event("blog-listing-updated");
+      document.dispatchEvent(updateEvent);
     };
 
     // Adding existing functionality to the "Load More" button
